@@ -1,0 +1,55 @@
+<Window x:Class="Alfa.Desktop.PolicyManagerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Policy Manager" Height="520" Width="760" Background="#0B1220"
+        Loaded="Window_Loaded">
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Spacing="16">
+            <TextBlock Text="Policy Manager" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC" />
+            <TextBlock Text="Create and synchronize baseline rules with the local core." Foreground="#94A3B8" TextWrapping="Wrap" />
+
+            <TextBlock Text="Rule ID" Foreground="#E2E8F0" />
+            <TextBox x:Name="RuleIdText" Height="36" />
+
+            <TextBlock Text="Target (executable)" Foreground="#E2E8F0" />
+            <TextBox x:Name="TargetText" Height="36" />
+
+            <TextBlock Text="Condition" Foreground="#E2E8F0" />
+            <TextBox x:Name="ConditionText" Height="36" />
+
+            <TextBlock Text="Priority" Foreground="#E2E8F0" />
+            <TextBox x:Name="PriorityText" Height="36" Text="100" />
+
+            <StackPanel Orientation="Horizontal" Spacing="12" Margin="0 12 0 0">
+                    <Button Content="Add rule" Width="140" Height="44" Click="AddRuleButton_Click" Background="#2563EB" Foreground="White" BorderThickness="0" />
+                    <Button Content="Refresh rules" Width="140" Height="44" Click="RefreshButton_Click" Background="#1E293B" Foreground="#E2E8F0" BorderThickness="0" />
+
+            <TextBlock x:Name="StatusText" Text="Ready to manage rules." Foreground="#94A3B8" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <Border Grid.Column="1" Background="#111B34" CornerRadius="24" Padding="18" BorderBrush="#334155" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Recent policy rules" FontSize="18" FontWeight="SemiBold" Foreground="#E2E8F0" Margin="0 0 0 16" />
+                <ListBox x:Name="RulesList" Height="420" Background="#0F172A" BorderThickness="0" Foreground="#F8FAFC">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#0B1220" CornerRadius="14" Padding="14" Margin="0 0 0 12" BorderBrush="#334155" BorderThickness="1">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Target}" FontSize="16" FontWeight="Bold" Foreground="#F8FAFC" />
+                                    <TextBlock Text="{Binding Type}" Foreground="#A5B4FC" />
+                                    <TextBlock Text="{Binding Condition}" Foreground="#94A3B8" />
+                                    <TextBlock Text="Priority: {Binding Priority}" Foreground="#94A3B8" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

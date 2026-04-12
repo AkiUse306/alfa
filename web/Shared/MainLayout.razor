@@ -1,0 +1,23 @@
+@inherits LayoutComponentBase
+
+<div class="main-layout">
+    <aside class="sidebar">
+        <div class="brand">
+            <h1>Alfa</h1>
+            <span>Control plane</span>
+        </div>
+        <nav>
+            <NavLink href="/" class="nav-link" ActiveClass="active">Home</NavLink>
+            <NavLink href="/dashboard" class="nav-link" ActiveClass="active">Dashboard</NavLink>
+            <NavLink href="/rules" class="nav-link" ActiveClass="active">Rules</NavLink>
+            <NavLink href="/telemetry" class="nav-link" ActiveClass="active">Telemetry</NavLink>
+        </nav>
+    </aside>
+
+    <main class="content">
+        <div class="topbar">
+            <span>Enterprise device protection</span>
+        </div>
+        @Body
+    </main>
+</div>

@@ -1,0 +1,68 @@
+<Window x:Class="Alfa.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Alfa Desktop" Height="520" Width="860" Background="#0B1220"
+        Loaded="Window_Loaded">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Margin="0 0 0 18">
+            <TextBlock Text="Alfa Desktop Control Panel" FontSize="30" FontWeight="Bold" Foreground="#F8FAFC" />
+            <TextBlock Text="Enterprise endpoint protection and policy orchestration." FontSize="14" Foreground="#94A3B8" Margin="0 8 0 0" />
+        </StackPanel>
+
+        <Border Grid.Row="1" Grid.Column="0" Background="#111B34" CornerRadius="24" Padding="26" Margin="0 0 18 0" BorderBrush="#334155" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="System Overview" FontSize="18" FontWeight="SemiBold" Foreground="#E2E8F0" />
+                <TextBlock x:Name="StatusText" Text="Connecting to core..." FontSize="14" Foreground="#94A3B8" Margin="0 10 0 0" />
+                <StackPanel Orientation="Horizontal" Margin="0 18 0 0" HorizontalAlignment="Stretch" Spacing="14">
+                    <Border Background="#17233D" CornerRadius="18" Padding="18" Width="180">
+                        <StackPanel>
+                            <TextBlock Text="Protected" Foreground="#38BDF8" FontSize="12" />
+                            <TextBlock Text="Active" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC" Margin="0 8 0 0" />
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#17233D" CornerRadius="18" Padding="18" Width="180">
+                        <StackPanel>
+                            <TextBlock Text="Rules" Foreground="#A78BFA" FontSize="12" />
+                            <TextBlock x:Name="RulesCount" Text="0" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC" Margin="0 8 0 0" />
+                        </StackPanel>
+                    </Border>
+                    <Border Background="#17233D" CornerRadius="18" Padding="18" Width="180">
+                        <StackPanel>
+                            <TextBlock Text="Violations" Foreground="#F472B6" FontSize="12" />
+                            <TextBlock x:Name="ViolationCount" Text="0" FontSize="24" FontWeight="Bold" Foreground="#F8FAFC" Margin="0 8 0 0" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <TextBlock Text="Latest activity" FontSize="16" FontWeight="SemiBold" Foreground="#E2E8F0" Margin="0 24 0 12" />
+                <StackPanel Background="#0F172A" CornerRadius="18" Padding="18" Spacing="10">
+                    <TextBlock Text="No policy violations detected in the last 24 hours." Foreground="#94A3B8" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" Background="#111B34" CornerRadius="24" Padding="28" BorderBrush="#334155" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Fast actions" FontSize="18" FontWeight="SemiBold" Foreground="#E2E8F0" />
+                <Button x:Name="RefreshButton" Content="Refresh status" Height="52" Margin="0 22 0 12" Click="RefreshButton_Click" Background="#2563EB" Foreground="White" FontWeight="SemiBold" BorderThickness="0" />
+                <Button x:Name="SyncButton" Content="Sync policies" Height="52" Margin="0 0 0 12" Click="SyncButton_Click" Background="#2563EB" Foreground="White" FontWeight="SemiBold" BorderThickness="0" />
+                <Button x:Name="PolicyManagerButton" Content="Open policy manager" Height="52" Margin="0 0 0 12" Click="PolicyManagerButton_Click" Background="#0F172A" Foreground="#E2E8F0" FontWeight="SemiBold" BorderThickness="0" />
+                <Button x:Name="LockButton" Content="Lock Discord" Height="52" Margin="0 0 0 12" Click="LockButton_Click" Background="#7C3AED" Foreground="White" FontWeight="SemiBold" BorderThickness="0" />
+                <Button x:Name="UnlockButton" Content="Unlock Discord" Height="52" Click="UnlockButton_Click" Background="#1E293B" Foreground="#E2E8F0" FontWeight="SemiBold" BorderThickness="0" />
+                <StackPanel Margin="0 32 0 0">
+                    <TextBlock Text="Device status" FontSize="16" FontWeight="SemiBold" Foreground="#E2E8F0" />
+                    <TextBlock Text="All kernel components are healthy and protected." Foreground="#94A3B8" Margin="0 8 0 0" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

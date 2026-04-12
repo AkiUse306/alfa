@@ -1,0 +1,98 @@
+@page "/rules"
+@inject HttpClient Http
+
+<PageTitle>Policy Rules</PageTitle>
+
+<div class="panel-shell">
+    <div class="panel-header">
+        <div>
+            <h1>Policy rules</h1>
+            <p class="subtitle">Create expressive enforcement rules and deploy them across protected endpoints.</p>
+        </div>
+        <button class="secondary-button" @onclick="Refresh">Refresh rules</button>
+    </div>
+
+    <div class="rules-toolbar">
+        <input placeholder="Rule ID" @bind="RuleId" />
+        <input placeholder="Target" @bind="Target" />
+        <input placeholder="Condition" @bind="Condition" />
+        <input placeholder="Priority" type="number" @bind="Priority" min="0" />
+        <button class="primary-button" @onclick="CreateRule">Create rule</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(StatusMessage))
+    {
+        <div class="status-message">@StatusMessage</div>
+    }
+
+    @if (ruleList is null)
+    {
+        <p>Loading rules...</p>
+    }
+    else if (!ruleList.Any())
+    {
+        <p>No active rules found.</p>
+    }
+    else
+    {
+        <div class="rules-grid">
+            @foreach (var rule in ruleList!)
+            {
+                <div class="device-card">
+                    <div class="device-card-header">
+                        <h3>@rule.Target</h3>
+                        <span class="chip">@rule.Type</span>
+                    </div>
+                    <p>@rule.Condition</p>
+                    <p class="detail">Priority: @rule.Priority</p>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<PolicyRule>? ruleList;
+    private string RuleId = string.Empty;
+    private string Target = string.Empty;
+    private string Condition = string.Empty;
+    private int Priority = 100;
+    private string StatusMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
+    }
+
+    private async Task Refresh()
+    {
+        ruleList = await Http.GetFromJsonAsync<List<PolicyRule>>("/api/rules");
+        StatusMessage = string.Empty;
+    }
+
+    private async Task CreateRule()
+    {
+        if (string.IsNullOrWhiteSpace(RuleId) || string.IsNullOrWhiteSpace(Target) || string.IsNullOrWhiteSpace(Condition))
+        {
+            StatusMessage = "Rule ID, target, and condition are required.";
+            return;
+        }
+
+        var rule = new PolicyRule(RuleId, RuleType.AlwaysBlock, Target, Condition, Priority);
+        var response = await Http.PostAsJsonAsync("/api/rules", rule);
+
+        if (response.IsSuccessStatusCode)
+        {
+            StatusMessage = "Rule created successfully.";
+            await Refresh();
+            RuleId = string.Empty;
+            Target = string.Empty;
+            Condition = string.Empty;
+            Priority = 100;
+        }
+        else
+        {
+            StatusMessage = "Unable to create rule.";
+        }
+    }
+}

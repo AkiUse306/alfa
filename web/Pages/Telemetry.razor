@@ -1,0 +1,53 @@
+@page "/telemetry"
+@inject HttpClient Http
+
+<PageTitle>Telemetry</PageTitle>
+
+<div class="panel-shell">
+    <div class="panel-header">
+        <div>
+            <h1>Audit telemetry</h1>
+            <p class="subtitle">Understand how policies are enforced and where actions are taking place.</p>
+        </div>
+        <button class="secondary-button" @onclick="Refresh">Refresh stream</button>
+    </div>
+
+    @if (Entries is null)
+    {
+        <p>Loading telemetry...</p>
+    }
+    else if (!Entries.Any())
+    {
+        <p>No telemetry records available.</p>
+    }
+    else
+    {
+        <div class="telemetry-grid">
+            @foreach (var entry in Entries)
+            {
+                <div class="telemetry-card">
+                    <div class="device-card-header">
+                        <h3>@entry.Command</h3>
+                        <span class="chip">@(entry.Success ? "Success" : "Failure")</span>
+                    </div>
+                    <p><strong>Target:</strong> @(string.IsNullOrWhiteSpace(entry.Target) ? "System" : entry.Target)</p>
+                    <p class="detail">@entry.Timestamp.ToLocalTime().ToString("g")</p>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<AuditEntry>? Entries;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
+    }
+
+    private async Task Refresh()
+    {
+        Entries = await Http.GetFromJsonAsync<List<AuditEntry>>("/api/telemetry");
+    }
+}

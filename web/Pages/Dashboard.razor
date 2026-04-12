@@ -1,0 +1,105 @@
+@page "/dashboard"
+@inject HttpClient Http
+
+<PageTitle>Alfa Dashboard</PageTitle>
+
+<div class="dashboard-shell">
+    <section class="hero-panel">
+        <div class="hero-copy">
+            <span class="eyebrow">Security control plane</span>
+            <h1>Operate policy, telemetry, and endpoint protection from one modern console.</h1>
+            <p>Alfa combines a hardened C++ enforcement core, a rich .NET dashboard, and secure CLI tooling for enterprise-grade policy orchestration.</p>
+            <div class="cta-group">
+                <a class="primary-button" href="/rules">Manage policies</a>
+                <a class="secondary-button" href="/telemetry">View telemetry</a>
+            </div>
+        </div>
+
+        <div class="hero-metrics">
+            <div class="metric-card">
+                <span>System health</span>
+                <strong>@HealthStatus</strong>
+                <small>Last checked @LastChecked</small>
+            </div>
+            <div class="metric-card accent">
+                <span>Devices</span>
+                <strong>@Devices.Count</strong>
+                <small>Protected endpoints</small>
+            </div>
+            <div class="metric-card accent-secondary">
+                <span>Rules</span>
+                <strong>@Rules.Count</strong>
+                <small>Active policies</small>
+            </div>
+        </div>
+    </section>
+
+    <section class="feature-grid">
+        <article class="feature-card">
+            <h2>Unified enforcement</h2>
+            <p>Synchronize local policy with centralized rules and audit every action in a single platform.</p>
+        </article>
+        <article class="feature-card">
+            <h2>Secure local core</h2>
+            <p>HMAC-signed IPC commands protect the desktop client and CLI against tampering.</p>
+        </article>
+        <article class="feature-card">
+            <h2>Rich telemetry</h2>
+            <p>Review rule events, device status, and compliance signals in real time.</p>
+        </article>
+    </section>
+
+    <section class="list-panel">
+        <div class="section-header">
+            <h2>Connected devices</h2>
+            <button class="secondary-button" @onclick="Refresh">Refresh</button>
+        </div>
+        <div class="device-grid">
+            @foreach (var device in Devices)
+            {
+                <div class="device-card">
+                    <div class="device-card-header">
+                        <h3>@device.Hostname</h3>
+                        <span class="chip">@device.OsVersion</span>
+                    </div>
+                    <p><strong>ID:</strong> @device.DeviceId</p>
+                    <p><strong>Pairing:</strong> @device.PairingCode</p>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+@code {
+    private string HealthStatus = "Loading...";
+    private string LastChecked = "—";
+    private List<DeviceMetadata> Devices = new();
+    private List<PolicyRule> Rules = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
+    }
+
+    private async Task Refresh()
+    {
+        try
+        {
+            var health = await Http.GetFromJsonAsync<HealthModel>("/api/health");
+            var devices = await Http.GetFromJsonAsync<List<DeviceMetadata>>("/api/devices");
+            var rules = await Http.GetFromJsonAsync<List<PolicyRule>>("/api/rules");
+
+            HealthStatus = health?.Status ?? "Unavailable";
+            LastChecked = health?.Timestamp.ToLocalTime().ToString("g") ?? "—";
+            Devices = devices ?? new();
+            Rules = rules ?? new();
+        }
+        catch
+        {
+            HealthStatus = "Offline";
+            LastChecked = DateTime.Now.ToString("g");
+        }
+    }
+
+    private sealed record HealthModel(string Status, DateTime Timestamp);
+}

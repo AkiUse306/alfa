@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 10.0.x
+      - name: Build C++ core
+        run: |
+          cd core
+          cmake -S . -B build
+          cmake --build build --config Release
+      - name: Build .NET projects
+        run: |
+          dotnet restore shared
+          dotnet build shared -c Release
+          dotnet build server -c Release
+          dotnet build web -c Release
+          dotnet build cli -c Release
+
+  build-windows-app:
+    runs-on: windows-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 10.0.x
+      - name: Build desktop app
+        run: |
+          dotnet build app/desktop -c Release
