@@ -50,7 +50,7 @@ cd web && dotnet run
 cd cli && dotnet run -- --status
 
 # Build desktop app (Windows only)
-cd /app/desktop && dotnet build -c Release
+cd app/desktop && dotnet build -c Release
 ```
 
 ### Features
