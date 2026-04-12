@@ -1,0 +1,12 @@
+/workspaces/alfa/shared/bin/Release/net8.0/Alfa.Shared.deps.json
+/workspaces/alfa/shared/bin/Release/net8.0/Alfa.Shared.dll
+/workspaces/alfa/shared/bin/Release/net8.0/Alfa.Shared.pdb
+/workspaces/alfa/shared/obj/Release/net8.0/Alfa.Shared.GeneratedMSBuildEditorConfig.editorconfig
+/workspaces/alfa/shared/obj/Release/net8.0/Alfa.Shared.AssemblyInfoInputs.cache
+/workspaces/alfa/shared/obj/Release/net8.0/Alfa.Shared.AssemblyInfo.cs
+/workspaces/alfa/shared/obj/Release/net8.0/Alfa.Shared.csproj.CoreCompileInputs.cache
+/workspaces/alfa/shared/obj/Release/net8.0/Alfa.Shared.sourcelink.json
+/workspaces/alfa/shared/obj/Release/net8.0/Alfa.Shared.dll
+/workspaces/alfa/shared/obj/Release/net8.0/refint/Alfa.Shared.dll
+/workspaces/alfa/shared/obj/Release/net8.0/Alfa.Shared.pdb
+/workspaces/alfa/shared/obj/Release/net8.0/ref/Alfa.Shared.dll

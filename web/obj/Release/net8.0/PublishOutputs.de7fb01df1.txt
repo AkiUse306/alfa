@@ -1,0 +1,7 @@
+/workspaces/alfa/dist/web/Alfa.Web
+/workspaces/alfa/dist/web/Alfa.Web.dll
+/workspaces/alfa/dist/web/Alfa.Web.deps.json
+/workspaces/alfa/dist/web/Alfa.Web.runtimeconfig.json
+/workspaces/alfa/dist/web/Alfa.Web.pdb
+/workspaces/alfa/dist/web/Alfa.Shared.dll
+/workspaces/alfa/dist/web/Alfa.Shared.pdb
