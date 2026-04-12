@@ -31,7 +31,6 @@ Alfa combines:
 ### Build all modules
 
 ```bash
-cd /workspaces/alfa
 ./build.sh
 ```
 
@@ -42,16 +41,16 @@ cd /workspaces/alfa
 cd core && cmake -S . -B build && cmake --build build
 
 # Run server backend
-cd /workspaces/alfa/server && dotnet run
+cd server && dotnet run
 
 # Run Blazor web dashboard
-cd /workspaces/alfa/web && dotnet run
+cd web && dotnet run
 
 # Run CLI
-cd /workspaces/alfa/cli && dotnet run -- --status
+cd cli && dotnet run -- --status
 
 # Build desktop app (Windows only)
-cd /workspaces/alfa/app/desktop && dotnet build -c Release
+cd /app/desktop && dotnet build -c Release
 ```
 
 ### Features
