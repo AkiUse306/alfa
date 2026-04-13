@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Alfa.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+58ed09fab89e840c9d9fa2091cfa692557d089f0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2057b81f74f3540888be0caf47e50e0447d3bec7")]
 [assembly: System.Reflection.AssemblyProductAttribute("Alfa.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Alfa.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
