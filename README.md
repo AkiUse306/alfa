@@ -21,6 +21,8 @@ Alfa combines:
 - `shared/` — Shared contracts, models, and protocol definitions
 - `docs/` — Architecture and security documentation
 
+> The repository is linked to GitHub Pages at `https://akiuse306.github.io/alfa` for easy public access.
+
 ## Getting started
 
 ### Prerequisites
