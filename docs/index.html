@@ -18,6 +18,7 @@
         <a href="#features">Features</a>
         <a href="#security">Security</a>
         <a href="#quickstart">Quick Start</a>
+        <a href="#learn-more">Learn</a>
         <a href="https://github.com/AkiUse306/alfa" target="_blank" rel="noopener noreferrer">GitHub</a>
       </nav>
     </div>
@@ -27,26 +28,27 @@
     <section class="hero section-primary">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <span class="eyebrow">Enterprise-ready platform</span>
-          <h1>Deploy secure endpoint policy orchestration from one modern command center.</h1>
-          <p>Alfa combines hardened local enforcement, a polished Blazor dashboard, and a developer-friendly CLI so teams can manage device policy with confidence.</p>
+          <span class="eyebrow">Enterprise-ready control plane</span>
+          <h1>Deploy secure endpoint policy orchestration with confidence.</h1>
+          <p>Alfa brings hardened local enforcement, a responsive Blazor dashboard, and a developer-first CLI together in one polished platform.</p>
           <div class="hero-actions">
-            <a class="button button-primary" href="https://github.com/AkiUse306/alfa/releases/tag/1.0" target="_blank" rel="noopener noreferrer">Download 1.0</a>
-            <a class="button button-secondary" href="https://github.com/AkiUse306/alfa" target="_blank" rel="noopener noreferrer">View repo</a>
+            <a class="button button-primary" href="https://github.com/AkiUse306/alfa/releases/tag/1.0" target="_blank" rel="noopener noreferrer">Download release</a>
+            <a class="button button-secondary" href="./architecture.md">Explore docs</a>
           </div>
         </div>
+
         <div class="hero-panel">
           <div class="stat-card accent">
-            <span>Multi-platform</span>
-            <strong>Linux · macOS · Windows</strong>
+            <strong>Built for modern ops</strong>
+            <span>Secure local enforcement, centralized policy, and real-time visibility.</span>
           </div>
           <div class="stat-card">
-            <span>Runtime coverage</span>
-            <strong>ARM, x64, musl, Apple Silicon</strong>
+            <strong>Multi-platform</strong>
+            <span>Linux, macOS, Windows, ARM and x64 support.</span>
           </div>
           <div class="stat-card accent-secondary">
-            <span>Secure core</span>
-            <strong>HMAC-signed IPC commands</strong>
+            <strong>Auditable workflows</strong>
+            <span>Signed commands, immutable telemetry, and compliance-ready reporting.</span>
           </div>
         </div>
       </div>
@@ -54,57 +56,78 @@
 
     <section id="features" class="section-light">
       <div class="container section-header">
-        <p class="eyebrow">What Alfa delivers</p>
-        <h2>A polished security platform for modern teams.</h2>
+        <p class="eyebrow">Why Alfa</p>
+        <h2>Everything you need for endpoint policy orchestration.</h2>
       </div>
       <div class="container cards-grid">
         <article class="feature-card">
-          <h3>Unified policy workflow</h3>
-          <p>Manage rules, telemetry, and device state from one modern admin interface.</p>
+          <h3>Centralized policy management</h3>
+          <p>Create, deploy, and audit rules from a single dashboard backed by an efficient control plane.</p>
         </article>
         <article class="feature-card">
-          <h3>Secure local execution</h3>
-          <p>All commands are authenticated and the local core enforces policies in a hardened runtime.</p>
+          <h3>Hardened enforcement engine</h3>
+          <p>The local core validates each command with signatures and preserves state in robust storage.</p>
         </article>
         <article class="feature-card">
-          <h3>Real-time telemetry</h3>
-          <p>Track events, compliance, and device status instantly with rich server dashboards.</p>
+          <h3>Live observability</h3>
+          <p>Monitor endpoint events, compliance status, and deployment success across all agents.</p>
         </article>
         <article class="feature-card">
-          <h3>Developer-friendly CLI</h3>
-          <p>Script deployments, inspect state, and manage policies from the terminal.</p>
+          <h3>CLI automation</h3>
+          <p>Use the terminal to script deployments, run diagnostics, and integrate Alfa into CI/CD workflows.</p>
         </article>
       </div>
     </section>
 
-    <section id="security" class="section-primary">
+    <section id="how-it-works" class="section-primary">
+      <div class="container section-header">
+        <p class="eyebrow">How it works</p>
+        <h2>Designed for resilient enforcement and secure policy delivery.</h2>
+      </div>
+      <div class="container cards-grid">
+        <article class="feature-card">
+          <h3>Local enforcement</h3>
+          <p>The C++ core executes commands safely, rejects tampered payloads, and stores policy state persistently.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Control plane</h3>
+          <p>An ASP.NET server manages devices, validates API keys, and pushes policy updates to the local agents.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Dashboard & telemetry</h3>
+          <p>A Blazor interface surfaces compliance, rule activity, and audit data in real time.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="security" class="section-light">
       <div class="container grid-2">
         <div>
           <p class="eyebrow">Built for trust</p>
-          <h2>Defensive architecture with strong integrity guarantees.</h2>
-          <p>Alfa is designed to minimize attack surface, protect local state, and make policy enforcement transparent across the stack.</p>
+          <h2>Defense-in-depth for endpoint policy orchestration.</h2>
+          <p>Alfa combines secure authentication, tamper resistance, and signed workflow state to keep policy execution consistent and auditable.</p>
         </div>
         <div class="security-list">
           <div class="security-card">
             <strong>Authentication</strong>
-            <p>API tokens for the server, pairing codes for devices, and optional local protection.</p>
+            <p>API tokens, device pairing, and secure control plane access protect management traffic.</p>
           </div>
           <div class="security-card">
             <strong>Anti-tampering</strong>
-            <p>Watchdog recovery and signed IPC help protect the enforcement core from tampering.</p>
+            <p>Local watchguard recovery, command signing, and immutable state ensure integrity even under attack.</p>
           </div>
           <div class="security-card">
-            <strong>Protected data</strong>
-            <p>Immutable telemetry and cryptographically signed workflow state guard your audit trail.</p>
+            <strong>Telemetry</strong>
+            <p>Audit trails are stored securely, making investigations and compliance reporting simple and reliable.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="quickstart" class="section-light">
+    <section id="quickstart" class="section-primary">
       <div class="container section-header">
         <p class="eyebrow">Quick start</p>
-        <h2>Ready to run in minutes.</h2>
+        <h2>Install and launch Alfa in just a few steps.</h2>
       </div>
       <div class="container code-grid">
         <div class="code-panel">
@@ -123,11 +146,32 @@ cd /opt/alfa/dist/cli && dotnet Alfa.Cli.dll --help</code></pre>
         </div>
       </div>
     </section>
+
+    <section id="learn-more" class="section-light learn-more">
+      <div class="container section-header">
+        <p class="eyebrow">Learn more</p>
+        <h2>Read the architecture and deployment guides.</h2>
+      </div>
+      <div class="container cards-grid">
+        <article class="feature-card">
+          <h3><a href="architecture.md">Architecture</a></h3>
+          <p>Understand Alfa's modular design, local enforcement flow, and server-side control plane.</p>
+        </article>
+        <article class="feature-card">
+          <h3><a href="deployment.md">Deployment</a></h3>
+          <p>Follow best practices for installing and running Alfa across Linux, Windows, and macOS.</p>
+        </article>
+        <article class="feature-card">
+          <h3><a href="security.md">Security</a></h3>
+          <p>Review the platform's authentication, anti-tampering, and telemetry protections.</p>
+        </article>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
     <div class="container footer-grid">
-      <p>Alfa — secure endpoint policy orchestration for modern environments.</p>
+      <p>Alfa — secure endpoint policy orchestration built with C++, .NET, and modern web stack.</p>
       <a href="https://github.com/AkiUse306/alfa" target="_blank" rel="noopener noreferrer">GitHub repository</a>
     </div>
   </footer>
