@@ -1,8 +1,0 @@
-/workspaces/alfa/dist/cli/Alfa.Cli
-/workspaces/alfa/dist/cli/Alfa.Cli.dll
-/workspaces/alfa/dist/cli/Alfa.Cli.deps.json
-/workspaces/alfa/dist/cli/Alfa.Cli.runtimeconfig.json
-/workspaces/alfa/dist/cli/Alfa.Cli.pdb
-/workspaces/alfa/dist/cli/Spectre.Console.dll
-/workspaces/alfa/dist/cli/Alfa.Shared.dll
-/workspaces/alfa/dist/cli/Alfa.Shared.pdb

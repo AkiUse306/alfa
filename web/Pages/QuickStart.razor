@@ -1,0 +1,41 @@
+@page "/quickstart"
+
+<PageTitle>Quick Start</PageTitle>
+
+<div class="panel-shell">
+    <div class="panel-header">
+        <div>
+            <h1>Quick Start</h1>
+            <p class="subtitle">Get Alfa running quickly with a minimal installation and launch sequence.</p>
+        </div>
+    </div>
+
+    <section class="content-section">
+        <h2>Install</h2>
+        <pre><code># Linux
+./publish.sh
+
+# Windows
+Download the MSI asset from the Release page
+
+# macOS
+Download the PKG asset from the Release page</code></pre>
+    </section>
+
+    <section class="content-section">
+        <h2>Run the platform</h2>
+        <pre><code># Start the server
+cd dist/server
+./Alfa.Server
+
+# Start the CLI
+cd dist/cli
+./Alfa.Cli --help</code></pre>
+    </section>
+
+    <section class="content-section">
+        <h2>Open the dashboard</h2>
+        <p>After the server starts, open the dashboard in your browser:</p>
+        <p><strong>http://localhost:5000</strong></p>
+    </section>
+</div>

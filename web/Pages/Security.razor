@@ -1,0 +1,42 @@
+@page "/security"
+
+<PageTitle>Security</PageTitle>
+
+<div class="panel-shell">
+    <div class="panel-header">
+        <div>
+            <h1>Security model</h1>
+            <p class="subtitle">Alfa is built around strong authentication, tamper resistance, and protected local execution.</p>
+        </div>
+    </div>
+
+    <section class="content-section">
+        <h2>Authentication</h2>
+        <p>Alfa supports server tokens, device pairing codes, and optional local protection for sensitive operations.</p>
+        <ul>
+            <li>API key enforcement for protected endpoints.</li>
+            <li>Secure pairing workflow for trusted devices.</li>
+            <li>HTTPS for all control-plane traffic.</li>
+        </ul>
+    </section>
+
+    <section class="content-section">
+        <h2>Anti-tampering</h2>
+        <p>The enforcement core is designed to survive termination and reject unauthorized commands.</p>
+        <ul>
+            <li>Watchdog recovery for the local engine.</li>
+            <li>HMAC-signed IPC command verification.</li>
+            <li>Immutable rule persistence with SQLite.</li>
+        </ul>
+    </section>
+
+    <section class="content-section">
+        <h2>Data protection</h2>
+        <p>Protect sensitive configuration and telemetry with modern hashing and signed payloads.</p>
+        <ul>
+            <li>Salted, memory-hard credential storage.</li>
+            <li>Signed command payloads for local and remote communication.</li>
+            <li>Audit trails that are resistant to tampering.</li>
+        </ul>
+    </section>
+</div>
