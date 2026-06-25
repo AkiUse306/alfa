@@ -1,25 +1,20 @@
 <#
 .SYNOPSIS
-  Install-Alfa.ps1 - Readable, expanded MSI installer for AkiUse306/alfa
+  Install-Alfa.ps1 - MSI installer for AkiUse306/alfa with graceful failure handling.
 
 .DESCRIPTION
-  Downloads the latest GitHub release for AkiUse306/alfa that contains an .msi asset
-  and runs the installer. The script is written to be easy to read and maintain:
-    - clear functions
-    - explicit error handling
-    - optional interactive or silent install
-    - elevation when required
+  Downloads the latest .msi from the repo's latest release and runs the installer.
+  If the download fails the script will:
+    - print a clear error message,
+    - show the manual download link,
+    - attempt to open that link in Google Chrome (if available),
+    - fall back to opening the link in the default browser,
+    - keep the terminal open so you can copy the link or inspect the error,
+    - wait for user input before exiting.
 
 USAGE
   Save as Install-Alfa.ps1 and run from PowerShell:
     powershell -ExecutionPolicy Bypass -File .\Install-Alfa.ps1
-
-  To run from an elevated PowerShell prompt:
-    Start PowerShell as Administrator, then run the script.
-
-NOTES
-  - Requires network access to api.github.com
-  - Uses TLS 1.2 for GitHub API calls
 #>
 
 #region Preparations and Helpers
@@ -28,11 +23,11 @@ NOTES
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # Basic settings
-$Repo    = "AkiUse306/alfa"
-$ApiUrl  = "https://api.github.com/repos/$Repo/releases/latest"
+$Repo      = "AkiUse306/alfa"
+$ApiUrl    = "https://api.github.com/repos/$Repo/releases/latest"
 $UserAgent = "alfa-windows-installer/1.0"
 
-# Create a temporary directory for downloads
+# Temporary directory for downloads
 $TempDir = Join-Path -Path $env:TEMP -ChildPath ("alfa-installer-{0}" -f ([guid]::NewGuid().ToString()))
 New-Item -ItemType Directory -Path $TempDir -Force | Out-Null
 
@@ -73,7 +68,28 @@ $Headers = @{
 try {
     $release = Invoke-RestMethod -Uri $ApiUrl -Headers $Headers -ErrorAction Stop
 } catch {
-    Write-ErrorAndExit "Failed to fetch release metadata from GitHub: $($_.Exception.Message)"
+    Write-Warn "Failed to fetch release metadata from GitHub: $($_.Exception.Message)"
+    Write-Host ""
+    Write-Host "You can download the MSI manually from:"
+    $manualLink = "https://github.com/AkiUse306/alfa/releases/download/1.0/alfa-1.0-windows.msi"
+    Write-Host "  $manualLink"
+    Write-Host ""
+    Write-Host "Attempting to open the link in Google Chrome..."
+    try {
+        Start-Process -FilePath "chrome" -ArgumentList $manualLink -ErrorAction Stop
+        Write-Info "Opened link in Chrome."
+    } catch {
+        Write-Warn "Chrome not found or failed to open. Opening in default browser instead..."
+        try {
+            Start-Process -FilePath $manualLink -ErrorAction Stop
+            Write-Info "Opened link in default browser."
+        } catch {
+            Write-Warn "Failed to open a browser automatically. Please copy the link above into your browser."
+        }
+    }
+    Write-Host ""
+    Read-Host -Prompt "Press Enter to exit (the terminal will remain open so you can copy the link)"
+    exit 1
 }
 
 if (-not $release) {
@@ -98,11 +114,26 @@ if ($release.assets -and $release.assets.Count -gt 0) {
 if (-not $msiAsset) {
     Write-Warn "No .msi asset found in the latest release."
     Write-Host ""
-    Write-Host "Available assets (name : url):"
-    foreach ($a in $release.assets) {
-        Write-Host " - $($a.name) : $($a.browser_download_url)"
+    Write-Host "You can download the MSI manually from:"
+    $manualLink = "https://github.com/AkiUse306/alfa/releases/download/1.0/alfa-1.0-windows.msi"
+    Write-Host "  $manualLink"
+    Write-Host ""
+    Write-Host "Attempting to open the link in Google Chrome..."
+    try {
+        Start-Process -FilePath "chrome" -ArgumentList $manualLink -ErrorAction Stop
+        Write-Info "Opened link in Chrome."
+    } catch {
+        Write-Warn "Chrome not found or failed to open. Opening in default browser instead..."
+        try {
+            Start-Process -FilePath $manualLink -ErrorAction Stop
+            Write-Info "Opened link in default browser."
+        } catch {
+            Write-Warn "Failed to open a browser automatically. Please copy the link above into your browser."
+        }
     }
-    Write-ErrorAndExit "Please provide an .msi release asset or install manually."
+    Write-Host ""
+    Read-Host -Prompt "Press Enter to exit (the terminal will remain open so you can copy the link)"
+    exit 1
 }
 
 $AssetName = $msiAsset.name
@@ -120,17 +151,42 @@ $OutPath = Join-Path -Path $TempDir -ChildPath $AssetName
 Write-Host ""
 Write-Info "Downloading MSI to: $OutPath"
 
+$downloadFailed = $false
+
 try {
     Invoke-WebRequest -Uri $AssetUrl -Headers $Headers -OutFile $OutPath -UseBasicParsing -ErrorAction Stop
+    Write-Info "Download completed."
 } catch {
-    Write-ErrorAndExit "Failed to download MSI: $($_.Exception.Message)"
+    $downloadFailed = $true
+    Write-Warn "Download failed: $($_.Exception.Message)"
 }
 
-if (-not (Test-Path -Path $OutPath)) {
-    Write-ErrorAndExit "Download failed; file not found at $OutPath"
-}
+if ($downloadFailed -or -not (Test-Path -Path $OutPath)) {
+    Write-Host ""
+    Write-Host "❌ Download failed. You can download the MSI manually from the link below:"
+    $manualLink = "https://github.com/AkiUse306/alfa/releases/download/1.0/alfa-1.0-windows.msi"
+    Write-Host ""
+    Write-Host "  $manualLink"
+    Write-Host ""
+    Write-Host "Attempting to open the link in Google Chrome..."
+    try {
+        Start-Process -FilePath "chrome" -ArgumentList $manualLink -ErrorAction Stop
+        Write-Info "Opened link in Chrome."
+    } catch {
+        Write-Warn "Chrome not found or failed to open. Opening in default browser instead..."
+        try {
+            Start-Process -FilePath $manualLink -ErrorAction Stop
+            Write-Info "Opened link in default browser."
+        } catch {
+            Write-Warn "Failed to open a browser automatically. Please copy the link above into your browser."
+        }
+    }
 
-Write-Info "Download completed."
+    Write-Host ""
+    Write-Host "The script will not close the terminal so you can copy the link or retry."
+    Read-Host -Prompt "Press Enter to exit"
+    exit 1
+}
 
 #endregion
 
@@ -221,16 +277,21 @@ if ($exitCode -eq 0) {
     Write-Host "You can run:"
     Write-Host "  alfa"
     Write-Host ""
+    Read-Host -Prompt "Press Enter to exit"
     exit 0
 } elseif ($exitCode -eq 1602) {
     Write-Warn "Installation cancelled by user."
+    Write-Host ""
     Write-Host "If you want to run the installer manually, the MSI is at:"
     Write-Host "  $OutPath"
+    Read-Host -Prompt "Press Enter to exit"
     exit 2
 } else {
     Write-Warn "Installer exited with code $exitCode."
+    Write-Host ""
     Write-Host "If the install failed, try running the MSI manually:"
     Write-Host "  msiexec /i `"$OutPath`""
+    Read-Host -Prompt "Press Enter to exit"
     exit $exitCode
 }
 
