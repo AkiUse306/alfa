@@ -1,7 +1,7 @@
 # Alfa
 
 <p align="center">
-  <img src="docs/assets/logo.png" alt="Alfa Logo" width="140">
+  <img src="favicon.ico" alt="Alfa Logo" width="140">
 </p>
 
 <h1 align="center">Alfa</h1>
