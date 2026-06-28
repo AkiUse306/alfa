@@ -1,298 +1,129 @@
+#Requires -RunAsAdministrator
 <#
 .SYNOPSIS
-  Install-Alfa.ps1 - MSI installer for AkiUse306/alfa with graceful failure handling.
-
+    Alfa Endpoint Protection - Installer
 .DESCRIPTION
-  Downloads the latest .msi from the repo's latest release and runs the installer.
-  If the download fails the script will:
-    - print a clear error message,
-    - show the manual download link,
-    - attempt to open that link in Google Chrome (if available),
-    - fall back to opening the link in the default browser,
-    - keep the terminal open so you can copy the link or inspect the error,
-    - wait for user input before exiting.
-
-USAGE
-  Save as Install-Alfa.ps1 and run from PowerShell:
-    powershell -ExecutionPolicy Bypass -File .\Install-Alfa.ps1
+    Installs Alfa on this machine. Requires administrator rights.
+    All actions are logged to C:\ProgramData\Alfa\install.log
+.NOTES
+    Run with: powershell -ExecutionPolicy Bypass -File install.ps1
 #>
 
-#region Preparations and Helpers
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 
-# Ensure TLS 1.2 for GitHub API
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+# ── Config ──────────────────────────────────────────────────────────────────
+$AppName        = "Alfa Endpoint Protection"
+$AppVersion     = "1.0"
+$InstallDir     = "C:\Program Files\Alfa"
+$LogDir         = "C:\ProgramData\Alfa"
+$LogFile        = "$LogDir\alfa-install.log"
+$MsiUrl         = "https://github.com/AkiUse306/alfa/releases/tag/1.0/alfa-1.0.msi"   
+$MsiHash        = "7E8AA2E5D6FD99E068835C6F76D0F35C6E2AD1A8F5D841B56E5881F6BDA5AC49"                               
+$TempMsi        = "$env:TEMP\alfa-installer.msi"
 
-# Basic settings
-$Repo      = "AkiUse306/alfa"
-$ApiUrl    = "https://api.github.com/repos/$Repo/releases/latest"
-$UserAgent = "alfa-windows-installer/1.0"
+# ── Logging ─────────────────────────────────────────────────────────────────
+function Write-Log {
+    param([string]$Message, [string]$Level = "INFO")
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $line = "[$timestamp] [$Level] $Message"
+    Write-Host $line
+    Add-Content -Path $LogFile -Value $line
+}
 
-# Temporary directory for downloads
-$TempDir = Join-Path -Path $env:TEMP -ChildPath ("alfa-installer-{0}" -f ([guid]::NewGuid().ToString()))
-New-Item -ItemType Directory -Path $TempDir -Force | Out-Null
+# ── Banner ───────────────────────────────────────────────────────────────────
+function Show-Banner {
+    Write-Host ""
+    Write-Host "============================================" -ForegroundColor Cyan
+    Write-Host "  $AppName v$AppVersion Installer" -ForegroundColor Cyan
+    Write-Host "============================================" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "This script will:" -ForegroundColor Yellow
+    Write-Host "  1. Download the Alfa MSI from: $MsiUrl"
+    Write-Host "  2. Verify its SHA-256 checksum"
+    Write-Host "  3. Install Alfa to: $InstallDir"
+    Write-Host "  4. Create a Windows service: AlfaService"
+    Write-Host "  5. Log all actions to: $LogFile"
+    Write-Host ""
+    Write-Host "Alfa requires the following permissions:" -ForegroundColor Yellow
+    Write-Host "  - Run as a Windows service (SYSTEM)"
+    Write-Host "  - Read/write to $InstallDir"
+    Write-Host "  - Read/write to $LogDir"
+    Write-Host "  [Add any other permissions your app needs here]"
+    Write-Host ""
+}
 
-# Ensure cleanup on exit
-$cleanupAction = {
-    try {
-        if (Test-Path -Path $TempDir) {
-            Remove-Item -Path $TempDir -Recurse -Force -ErrorAction SilentlyContinue
-        }
-    } catch {
-        # ignore cleanup errors
+# ── Consent ──────────────────────────────────────────────────────────────────
+function Get-Consent {
+    $response = Read-Host "Do you want to proceed? (yes/no)"
+    if ($response -ne "yes") {
+        Write-Host "Installation cancelled by user." -ForegroundColor Red
+        exit 0
     }
 }
-Register-EngineEvent PowerShell.Exiting -Action $cleanupAction | Out-Null
 
-# Logging helpers
-function Write-Info { param([string]$m) Write-Host " [INFO]  $m" -ForegroundColor Cyan }
-function Write-Warn { param([string]$m) Write-Host " [WARN]  $m" -ForegroundColor Yellow }
-function Write-ErrorAndExit { param([string]$m, [int]$code = 1) Write-Host " [ERROR] $m" -ForegroundColor Red; exit $code }
-
-#endregion
-
-#region Fetch latest release metadata
-
-Write-Host ""
-Write-Host "====================================="
-Write-Host "🚀 Alfa Installer for Windows (MSI)"
-Write-Host "====================================="
-Write-Host ""
-
-Write-Info "Querying latest release for repository: $Repo"
-
-$Headers = @{
-    "User-Agent" = $UserAgent
-    "Accept"     = "application/vnd.github.v3+json"
-}
-$exitCode = Start-MsiInstall -MsiPath $OutPath -Silent:$silent
-try {
-    $release = Invoke-RestMethod -Uri $ApiUrl -Headers $Headers -ErrorAction Stop
-} catch {
-    Write-Warn "Failed to fetch release metadata from GitHub: $($_.Exception.Message)"
-    Write-Host ""
-    Write-Host "You can download the MSI manually from:"
-    $manualLink = "https://github.com/AkiUse306/alfa/releases/download/1.0/alfa-1.0-windows.msi"
-    Write-Host "  $manualLink"
-    Write-Host ""
-    Write-Host "Attempting to open the link in Google Chrome..."
+# ── Download ─────────────────────────────────────────────────────────────────
+function Get-Installer {
+    Write-Log "Downloading installer from $MsiUrl"
     try {
-        Start-Process -FilePath "chrome" -ArgumentList $manualLink -ErrorAction Stop
-        Write-Info "Opened link in Chrome."
+        $wc = New-Object System.Net.WebClient
+        $wc.DownloadFile($MsiUrl, $TempMsi)
+        Write-Log "Download complete: $TempMsi"
     } catch {
-        Write-Warn "Chrome not found or failed to open. Opening in default browser instead..."
-        try {
-            Start-Process -FilePath $manualLink -ErrorAction Stop
-            Write-Info "Opened link in default browser."
-        } catch {
-            Write-Warn "Failed to open a browser automatically. Please copy the link above into your browser."
-        }
+        Write-Log "Download failed: $_" -Level "ERROR"
+        throw
     }
-    Write-Host ""
-    Read-Host -Prompt "Press Enter to exit (the terminal will remain open so you can copy the link)"
-    exit 1
 }
 
-if (-not $release) {
-    Write-ErrorAndExit "No release information returned from GitHub."
-}
-
-#endregion
-
-#region Select MSI asset
-
-Write-Info "Searching for .msi asset in the latest release..."
-
-$msiAsset = $null
-
-if ($release.assets -and $release.assets.Count -gt 0) {
-    # Prefer assets that end with .msi (case-insensitive)
-    $msiAsset = $release.assets | Where-Object {
-        $_.browser_download_url -match '\.msi$'
-    } | Select-Object -First 1
-}
-
-if (-not $msiAsset) {
-    Write-Warn "No .msi asset found in the latest release."
-    Write-Host ""
-    Write-Host "You can download the MSI manually from:"
-    $manualLink = "https://github.com/AkiUse306/alfa/releases/download/1.0/alfa-1.0-windows.msi"
-    Write-Host "  $manualLink"
-    Write-Host ""
-    Write-Host "Attempting to open the link in Google Chrome..."
-    try {
-        Start-Process -FilePath "chrome" -ArgumentList $manualLink -ErrorAction Stop
-        Write-Info "Opened link in Chrome."
-    } catch {
-        Write-Warn "Chrome not found or failed to open. Opening in default browser instead..."
-        try {
-            Start-Process -FilePath $manualLink -ErrorAction Stop
-            Write-Info "Opened link in default browser."
-        } catch {
-            Write-Warn "Failed to open a browser automatically. Please copy the link above into your browser."
-        }
+# ── Checksum ─────────────────────────────────────────────────────────────────
+function Confirm-Checksum {
+    Write-Log "Verifying SHA-256 checksum..."
+    $actual = (Get-FileHash -Path $TempMsi -Algorithm SHA256).Hash
+    if ($actual -ne $MsiHash) {
+        Write-Log "Checksum MISMATCH. Expected: $MsiHash  Got: $actual" -Level "ERROR"
+        Remove-Item $TempMsi -Force
+        throw "Checksum verification failed. Installation aborted."
     }
-    Write-Host ""
-    Read-Host -Prompt "Press Enter to exit (the terminal will remain open so you can copy the link)"
-    return $exitCode
+    Write-Log "Checksum verified OK: $actual"
 }
 
-$AssetName = $msiAsset.name
-$AssetUrl  = $msiAsset.browser_download_url
-
-Write-Info "Selected asset: $AssetName"
-Write-Info "Download URL: $AssetUrl"
-
-#endregion
-
-#region Download MSI
-
-$OutPath = Join-Path -Path $TempDir -ChildPath $AssetName
-
-Write-Host ""
-Write-Info "Downloading MSI to: $OutPath"
-
-$downloadFailed = $false
-
-try {
-    Invoke-WebRequest -Uri $AssetUrl -Headers $Headers -OutFile $OutPath -UseBasicParsing -ErrorAction Stop
-    Write-Info "Download completed."
-} catch {
-    $downloadFailed = $true
-    Write-Warn "Download failed: $($_.Exception.Message)"
-}
-
-if ($downloadFailed -or -not (Test-Path -Path $OutPath)) {
-    Write-Host ""
-    Write-Host "❌ Download failed. You can download the MSI manually from the link below:"
-    $manualLink = "https://github.com/AkiUse306/alfa/releases/download/1.0/alfa-1.0-windows.msi"
-    Write-Host ""
-    Write-Host "  $manualLink"
-    Write-Host ""
-    Write-Host "Attempting to open the link in Google Chrome..."
-    try {
-        Start-Process -FilePath "chrome" -ArgumentList $manualLink -ErrorAction Stop
-        Write-Info "Opened link in Chrome."
-    } catch {
-        Write-Warn "Chrome not found or failed to open. Opening in default browser instead..."
-        try {
-            Start-Process -FilePath $manualLink -ErrorAction Stop
-            Write-Info "Opened link in default browser."
-        } catch {
-            Write-Warn "Failed to open a browser automatically. Please copy the link above into your browser."
-        }
-    }
-
-    Write-Host ""
-    Write-Host "The script will not close the terminal so you can copy the link or retry."
-    Read-Host -Prompt "Press Enter to exit"
-    return $exitCode
-}
-
-#endregion
-
-#region Installer execution helpers
-
-function Is-Administrator {
-    $current = [Security.Principal.WindowsIdentity]::GetCurrent()
-    $principal = New-Object Security.Principal.WindowsPrincipal($current)
-    return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-}
-
-function Start-MsiInstall {
-    param(
-        [Parameter(Mandatory=$true)][string]$MsiPath,
-        [Parameter(Mandatory=$true)][bool]$Silent
+# ── Install ──────────────────────────────────────────────────────────────────
+function Install-Msi {
+    Write-Log "Starting MSI installation (visible UI)..."
+    $args = @(
+        "/i", $TempMsi,
+        "/l*v", "$LogDir\msi-install.log"   # verbose MSI log, NO /qn
     )
-
-    $msiFull = (Resolve-Path -Path $MsiPath).Path
-
-    if ($Silent) {
-        $msiArgs = "/i `"$msiFull`" /qn /norestart"
-    } else {
-        $msiArgs = "/i `"$msiFull`" /norestart"
+    $proc = Start-Process msiexec.exe -ArgumentList $args -Wait -PassThru
+    if ($proc.ExitCode -ne 0) {
+        Write-Log "MSI exited with code $($proc.ExitCode)" -Level "ERROR"
+        throw "Installation failed. See $LogDir\msi-install.log for details."
     }
+    Write-Log "MSI installation completed successfully."
+}
 
-    if (Is-Administrator) {
-        Write-Info "Running msiexec as Administrator..."
-        $proc = Start-Process -FilePath "msiexec.exe" -ArgumentList $msiArgs -Wait -PassThru
-        return $proc.ExitCode
-    } else {
-        Write-Info "Requesting elevation to run msiexec..."
-        try {
-            $psi = New-Object System.Diagnostics.ProcessStartInfo
-            $psi.FileName = "msiexec.exe"
-            $psi.Arguments = $msiArgs
-            $psi.Verb = "runas"
-            $psi.UseShellExecute = $true
-            $p = [System.Diagnostics.Process]::Start($psi)
-            $p.WaitForExit()
-            return $p.ExitCode
-        } catch {
-            Write-Warn "Elevation was cancelled or failed."
-            return 1602  # MSI user cancelled
-        }
+# ── Cleanup ──────────────────────────────────────────────────────────────────
+function Remove-Temp {
+    if (Test-Path $TempMsi) {
+        Remove-Item $TempMsi -Force
+        Write-Log "Temporary installer removed."
     }
 }
 
-#endregion
+# ── Main ─────────────────────────────────────────────────────────────────────
+New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
 
-#region Ask user for install mode
+Show-Banner
+Get-Consent
 
+Write-Log "=== Alfa installation started by $env:USERNAME on $env:COMPUTERNAME ==="
+
+Get-Installer
+Confirm-Checksum
+Install-Msi
+Remove-Temp
+
+Write-Log "=== Installation complete ==="
 Write-Host ""
-Write-Host "Choose installation mode:"
-Write-Host "  [S] Silent (recommended for scripts)"
-Write-Host "  [I] Interactive (shows installer UI)"
-Write-Host ""
-
-$choice = Read-Host "Enter S or I (default: S)"
-if ([string]::IsNullOrWhiteSpace($choice)) {
-    $choice = "S"
-}
-$choice = $choice.Trim().ToUpperInvariant()
-
-switch ($choice) {
-    "I" { $silent = $false }
-    default { $silent = $true }
-}
-
-if ($silent) {
-    Write-Info "Selected: Silent install"
-} else {
-    Write-Info "Selected: Interactive install"
-}
-
-#endregion
-
-#region Run installer
-
-Write-Host ""
-Write-Info "Starting installer..."
-
-$exitCode = Start-MsiInstall -MsiPath $OutPath -Silent:$silent
-
-if ($exitCode -eq 0) {
-    Write-Host ""
-    Write-Host "✅ Alfa installed successfully!"
-    Write-Host ""
-    Write-Host "You can run:"
-    Write-Host "  alfa"
-    Write-Host ""
-    Read-Host -Prompt "Press Enter to exit"
-    return $exitCode
-} elseif ($exitCode -eq 1602) {
-    Write-Warn "Installation cancelled by user."
-    Write-Host ""
-    Write-Host "If you want to run the installer manually, the MSI is at:"
-    Write-Host "  $OutPath"
-    Read-Host "Press Enter to exit"
-    return $exitCode
-} else {
-    Write-Warn "Installer exited with code $exitCode."
-    Write-Host ""
-    Write-Host "If the install failed, try running the MSI manually:"
-    Write-Host "  msiexec /i `"$OutPath`""
-    Read-Host -Prompt "Press Enter to exit"
-    return $exitCode
-}
-
-#endregion
+Write-Host "Alfa has been installed successfully." -ForegroundColor Green
+Write-Host "Log file: $LogFile"
