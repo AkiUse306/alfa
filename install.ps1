@@ -30,6 +30,7 @@ $UserAgent = "alfa-windows-installer/1.0"
 # Temporary directory for downloads
 $TempDir = Join-Path -Path $env:TEMP -ChildPath ("alfa-installer-{0}" -f ([guid]::NewGuid().ToString()))
 New-Item -ItemType Directory -Path $TempDir -Force | Out-Null
+$exitCode = Start-MsiInstall -MsiPath $OutPath -Silent:$silent
 
 # Ensure cleanup on exit
 $cleanupAction = {
@@ -133,7 +134,7 @@ if (-not $msiAsset) {
     }
     Write-Host ""
     Read-Host -Prompt "Press Enter to exit (the terminal will remain open so you can copy the link)"
-    exit 1
+    return $exitCode
 }
 
 $AssetName = $msiAsset.name
@@ -185,7 +186,7 @@ if ($downloadFailed -or -not (Test-Path -Path $OutPath)) {
     Write-Host ""
     Write-Host "The script will not close the terminal so you can copy the link or retry."
     Read-Host -Prompt "Press Enter to exit"
-    exit 1
+    return $exitCode
 }
 
 #endregion
