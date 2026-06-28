@@ -292,7 +292,7 @@ if ($exitCode -eq 0) {
     Write-Host "If the install failed, try running the MSI manually:"
     Write-Host "  msiexec /i `"$OutPath`""
     Read-Host -Prompt "Press Enter to exit"
-    exit $exitCode
+    return
 }
 
 #endregion
