@@ -53,6 +53,12 @@ static void RenderTable(string json)
         }
         AnsiConsole.Write(table);
     }
+    if (args.Contains("--self-update"))
+{
+    Console.WriteLine("Checking for updates...");
+    await Updater.CheckAndInstallAsync();
+    return;
+}
     catch
     {
         AnsiConsole.MarkupLine("[red]Unable to render rules list.[/]");
