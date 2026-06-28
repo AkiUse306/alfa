@@ -30,7 +30,6 @@ $UserAgent = "alfa-windows-installer/1.0"
 # Temporary directory for downloads
 $TempDir = Join-Path -Path $env:TEMP -ChildPath ("alfa-installer-{0}" -f ([guid]::NewGuid().ToString()))
 New-Item -ItemType Directory -Path $TempDir -Force | Out-Null
-$exitCode = Start-MsiInstall -MsiPath $OutPath -Silent:$silent
 
 # Ensure cleanup on exit
 $cleanupAction = {
@@ -65,7 +64,7 @@ $Headers = @{
     "User-Agent" = $UserAgent
     "Accept"     = "application/vnd.github.v3+json"
 }
-
+$exitCode = Start-MsiInstall -MsiPath $OutPath -Silent:$silent
 try {
     $release = Invoke-RestMethod -Uri $ApiUrl -Headers $Headers -ErrorAction Stop
 } catch {
