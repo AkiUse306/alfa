@@ -18,8 +18,14 @@ $AppVersion     = "1.0"
 $InstallDir     = "C:\Program Files\Alfa"
 $LogDir         = "C:\ProgramData\Alfa"
 $LogFile        = "$LogDir\alfa-install.log"
-$MsiUrl         = "https://github.com/AkiUse306/alfa/releases/tag/1.0/alfa-1.0.msi"   
-$MsiHash        = "7E8AA2E5D6FD99E068835C6F76D0F35C6E2AD1A8F5D841B56E5881F6BDA5AC49"                               
+
+# IMPORTANT: /download/, not /tag/
+$MsiUrl         = "https://github.com/AkiUse306/alfa/releases/download/1.0/alfa-1.0.msi"
+
+# Replace this with the REAL hash of alfa-1.0.msi after you upload it:
+# Get-FileHash .\alfa-1.0.msi -Algorithm SHA256
+$MsiHash        = "REPLACE_WITH_REAL_SHA256"
+
 $TempMsi        = "$env:TEMP\alfa-installer.msi"
 
 # ── Logging ─────────────────────────────────────────────────────────────────
@@ -58,7 +64,7 @@ function Get-Consent {
     $response = Read-Host "Do you want to proceed? (yes/no)"
     if ($response -ne "yes") {
         Write-Host "Installation cancelled by user." -ForegroundColor Red
-        exit 0
+        return
     }
 }
 
@@ -66,8 +72,7 @@ function Get-Consent {
 function Get-Installer {
     Write-Log "Downloading installer from $MsiUrl"
     try {
-        $wc = New-Object System.Net.WebClient
-        $wc.DownloadFile($MsiUrl, $TempMsi)
+        Invoke-WebRequest -Uri $MsiUrl -OutFile $TempMsi -UseBasicParsing
         Write-Log "Download complete: $TempMsi"
     } catch {
         Write-Log "Download failed: $_" -Level "ERROR"
@@ -92,7 +97,7 @@ function Install-Msi {
     Write-Log "Starting MSI installation (visible UI)..."
     $args = @(
         "/i", $TempMsi,
-        "/l*v", "$LogDir\msi-install.log"   # verbose MSI log, NO /qn
+        "/l*v", "$LogDir\msi-install.log"   # verbose MSI log, UI shown
     )
     $proc = Start-Process msiexec.exe -ArgumentList $args -Wait -PassThru
     if ($proc.ExitCode -ne 0) {
@@ -127,3 +132,6 @@ Write-Log "=== Installation complete ==="
 Write-Host ""
 Write-Host "Alfa has been installed successfully." -ForegroundColor Green
 Write-Host "Log file: $LogFile"
+Write-Host ""
+Write-Host "Thank You for Installing Alfa💖."
+Write-Host "You can visit my repo at https://github.com/AkiUse306/alfa."
