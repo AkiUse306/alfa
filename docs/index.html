@@ -127,22 +127,20 @@
     <section id="quickstart" class="section-primary">
       <div class="container section-header">
         <p class="eyebrow">Quick start</p>
-        <h2>Install and launch Alfa in just a few steps.</h2>
+        <h2>Install Alfa in just a few steps.</h2>
       </div>
       <div class="container code-grid">
         <div class="code-panel">
-          <h3>Install</h3>
-          <pre><code># Download the release package
-curl -L -o alfa.tar.gz https://github.com/AkiUse306/alfa/releases/download/1.0/alfa-1.0-linux.pkg
-mkdir -p /opt/alfa && tar -xzf alfa.tar.gz -C /opt/alfa</code></pre>
+          <h3>For Windows</h3>
+          <pre><code># Open Powershell and run
+irm https://raw.githubusercontent.com/AkiUse306/alfa/main/install.ps1 | iex
+          </code></pre>
         </div>
         <div class="code-panel">
-          <h3>Run</h3>
-          <pre><code># Start the server
-cd /opt/alfa/dist/server && dotnet Alfa.Server.dll
-
-# Start the CLI
-cd /opt/alfa/dist/cli && dotnet Alfa.Cli.dll --help</code></pre>
+          <h3>For MacOS and Linux</h3>
+          <pre><code># Install using SH Script
+curl -fsSL https://raw.githubusercontent.com/AkiUse306/alfa/main/install.sh | sh
+          </code></pre>
         </div>
       </div>
     </section>
