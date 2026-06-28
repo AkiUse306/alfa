@@ -278,21 +278,21 @@ if ($exitCode -eq 0) {
     Write-Host "  alfa"
     Write-Host ""
     Read-Host -Prompt "Press Enter to exit"
-    exit 0
+    return $exitCode
 } elseif ($exitCode -eq 1602) {
     Write-Warn "Installation cancelled by user."
     Write-Host ""
     Write-Host "If you want to run the installer manually, the MSI is at:"
     Write-Host "  $OutPath"
-    Read-Host -Prompt "Press Enter to exit"
-    exit 2
+    Read-Host "Press Enter to exit"
+    return $exitCode
 } else {
     Write-Warn "Installer exited with code $exitCode."
     Write-Host ""
     Write-Host "If the install failed, try running the MSI manually:"
     Write-Host "  msiexec /i `"$OutPath`""
     Read-Host -Prompt "Press Enter to exit"
-    return
+    return $exitCode
 }
 
 #endregion
