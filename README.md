@@ -68,7 +68,7 @@ alfa/
 Install Alfa using the installation script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AkiUse306/alfa/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/AkiUse306/alfa/refs/heads/main/install.sh | sh
 ```
 
 Or clone the repository and run:
