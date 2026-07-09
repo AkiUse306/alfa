@@ -50,7 +50,22 @@ fi
 FILE="$TMPDIR/$(basename "$ASSET_URL")"
 
 echo "📦 Downloading $(basename "$ASSET_URL")..."
-curl -fsSL -o "$FILE" "$ASSET_URL"
+echo "Downloading from:"
+echo "$ASSET_URL"
+
+curl -fL --retry 3 --retry-delay 2 -o "$FILE" "$ASSET_URL"
+
+echo
+echo "Downloaded file:"
+ls -lh "$FILE"
+
+echo
+echo "File type:"
+file "$FILE"
+
+echo
+echo "Size:"
+stat -f%z "$FILE"
 
 echo
 
