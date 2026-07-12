@@ -207,6 +207,10 @@ GitHub Pages documentation:
 
 **https://akiuse306.github.io/alfa**
 
+Personal Website:
+
+**https://alfadownload.freedev.app/**
+
 ---
 
 # License
