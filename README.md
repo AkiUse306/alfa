@@ -68,7 +68,7 @@ alfa/
 Install Alfa using the installation script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AkiUse306/alfa/refs/heads/main/install.sh | sh
+curl -fsSL https://alfa.akinchit-sahoo.workers.dev/install.sh | sh
 ```
 
 Or clone the repository and run:
@@ -88,7 +88,7 @@ chmod +x install.sh
 Open **PowerShell** and run:
 
 ```powershell
-irm https://raw.githubusercontent.com/AkiUse306/alfa/main/install.ps1 | iex
+irm https://alfa.akinchit-sahoo.workers.dev/install.ps1 | iex
 ```
 
 Or install locally:
@@ -209,7 +209,7 @@ GitHub Pages documentation:
 
 Personal Website:
 
-**https://alfadownload.freedev.app/**
+*https://alfa.akinchit-sahoo.workers.dev/**
 
 ---
 
